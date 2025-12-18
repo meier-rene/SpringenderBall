@@ -116,8 +116,8 @@ def resolve_circle_collision(c1, c2):
     dy = c2.y - c1.y
     distance = math.sqrt(dx * dx + dy * dy)
     
-    if distance == 0:
-        # Prevent division by zero
+    if distance < 1e-10:
+        # Prevent division by zero (circles are essentially at same position)
         return
     
     # Normal vector
@@ -173,6 +173,7 @@ def initialize_circles(num_circles, world_size_cm):
     for i in range(num_circles):
         placed = False
         attempts = 0
+        new_circle = None
         
         while not placed and attempts < max_attempts:
             # Random diameter in mm, convert to radius in cm
@@ -210,7 +211,7 @@ def initialize_circles(num_circles, world_size_cm):
             attempts += 1
         
         # If we couldn't place it without overlap, place it anyway
-        if not placed:
+        if not placed and new_circle is not None:
             print(f"Warning: Could not place circle {i+1} without overlap after {max_attempts} attempts")
             circles.append(new_circle)
     
