@@ -22,6 +22,12 @@ MM_TO_CM = 0.1  # Conversion factor
 NUM_CIRCLES = 10
 FPS = 60
 
+# Physics constants
+MIN_SPEED_CM_S = 5.0  # Minimum initial speed in cm/s
+MAX_SPEED_CM_S = 15.0  # Maximum initial speed in cm/s
+MARGIN_MULTIPLIER = 1.5  # Multiplier for initial placement margin
+COLLISION_EPSILON = 1e-8  # Epsilon for floating-point collision detection
+
 # Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -116,7 +122,7 @@ def resolve_circle_collision(c1, c2):
     dy = c2.y - c1.y
     distance = math.sqrt(dx * dx + dy * dy)
     
-    if distance < 1e-10:
+    if distance < COLLISION_EPSILON:
         # Prevent division by zero (circles are essentially at same position)
         return
     
@@ -181,12 +187,12 @@ def initialize_circles(num_circles, world_size_cm):
             radius_cm = (diameter_mm * MM_TO_CM) / 2
             
             # Random position (avoiding walls initially)
-            margin = radius_cm * 1.5
+            margin = radius_cm * MARGIN_MULTIPLIER
             x = random.uniform(margin, world_size_cm - margin)
             y = random.uniform(margin, world_size_cm - margin)
             
             # Random velocity (cm/s)
-            speed = random.uniform(5, 15)  # cm/s
+            speed = random.uniform(MIN_SPEED_CM_S, MAX_SPEED_CM_S)
             angle = random.uniform(0, 2 * math.pi)
             vx = speed * math.cos(angle)
             vy = speed * math.sin(angle)
